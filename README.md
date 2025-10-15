@@ -56,6 +56,39 @@ We’ll want to connect to both. You can either do it one at a time, or you can 
     
     # hold these packages at version 1.30.1-1.1
     sudo apt-mark hold kubelet kubeadm kubectl
-
     
+# ENABLE IP FORWARDING
+
+    # enable IP forwarding immediately (though temporarily until the next reboot), use the following command
+    sudo sysctl -w net.ipv4.ip_forward=1
+    
+    # uncomment the line in /etc/sysctl.conf enabling IP forwarding after reboot
+    sudo sed -i '/^#net\.ipv4\.ip_forward=1/s/^#//' /etc/sysctl.conf
+    
+    # Apply the changes to sysctl.conf
+    sudo sysctl -p
+
+# INITIALIZE THE CLUSTER (ONLY FROM CONTROL PLANE)
+
+    # ONLY ON THE CONTROL PLANE
+    # Initialize the cluster specifying containerd as the container runtime, ensuring that the --cri-socket argument includes the unix:// prefix
+    # containerd.sock is a Unix domain socket used by containerd
+    # The Unix socket mechanism is a method for inter-process communication (IPC) on the same host.
+    sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --cri-socket=unix:///run/containerd/containerd.sock
+    
+    # ONLY ON CONTROL PLANE (also in the output of 'kubeadm init' command)
+    mkdir -p $HOME/.kube
+    sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+    sudo chown $(id -u):$(id -g) $HOME/.kube/config
+    
+    # Install the Tigera Calico CNI operator and custom resource definitions
+    kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/tigera-operator.yaml
+    
+    # Install Calico CNI by creating the necessary custom resource
+    kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/custom-resources.yaml
+
+# JOIN THE WORKER NODE TO THE CLUSTER
+
+    # join the node to the cluster (get this command from the 'kubeadm init' output)
+    sudo kubeadm join 192.168.1.9:6443 --token lllrj0.pystabmhlyt2svty --discovery-token-ca-cert-hash sha256:9d2fd15886eb176466640067f361ed2295de38188b057becf31d3bf5a4fb0b73
 
