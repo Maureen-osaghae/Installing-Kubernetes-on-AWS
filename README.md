@@ -82,10 +82,11 @@ We’ll want to connect to both. You can either do it one at a time, or you can 
     sudo chown $(id -u):$(id -g) $HOME/.kube/config
     
     # Install the Tigera Calico CNI operator and custom resource definitions
-    kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/tigera-operator.yaml
-    
+    kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/calico.yaml
+
     # Install Calico CNI by creating the necessary custom resource
-    kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/custom-resources.yaml
+     #Then apply your custom resources (to configure it)
+    kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/custom-resources.yaml
 
 # JOIN THE WORKER NODE TO THE CLUSTER
 
@@ -96,6 +97,32 @@ Be sure to grab this command from the kubeadm init output, since you will have d
     # join the node to the cluster (get this command from the 'kubeadm init' output)
     sudo kubeadm join 10.10.10.226:6443 --token 3ojvgs.wdj3m4jw8udiyt4r --discovery-token-ca-cert-hash sha256:c83d52076cb801f47b64643c49500d0c1ee86d2d4a25cbd4a34e4d37126ea1e9 
 
+After running this command, you should see:
 <img width="467" height="274" alt="image" src="https://github.com/user-attachments/assets/d9acb678-6504-477f-a323-23853c9e94c3" />
 
+# Run the Kubectl get nodes command
+We can now retrieve our nodes from the control plane instance:
+
+<img width="464" height="69" alt="image" src="https://github.com/user-attachments/assets/9edfc61d-bfc3-45dd-b1ad-db14013718c8" />
+
+To view our Kubectl config, we can run this command:
+
+    kubectl config view
+
+<img width="452" height="440" alt="image" src="https://github.com/user-attachments/assets/554351e1-f307-42f3-9674-044b37d71bfc" />
+
+ we can view the full config by running:
+
+    cat .kube/config 
+
+
+<img width="470" height="442" alt="image" src="https://github.com/user-attachments/assets/928443c6-7bee-4cbe-bdd4-29d257c9fb7e" />
+
+# These outputs give us key pieces of information:
+
+server: https://10.10.10.68:6443 – this tells us what cluster this is pointing at
+The cluster is kubernetes
+The user is kubernetes-admin
+The certificate-authority-data – this is the ‘traffic cop’ which says ‘yes, this person is who they say they are and here’s the certificate to prove it’
+Using that certificate authority data, we’re able to pass in the client-certificate-data and client-key-data and if it all matches, then we can successfully authenticate.
 
