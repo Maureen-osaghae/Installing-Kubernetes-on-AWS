@@ -1,4 +1,4 @@
-# Installing-Kubernetes-on-AWS EC2
+# Installing-Kubernetes-on-AWS EC2 instances
 Discover how I install Kubernetes with a control-plane instance and a node instance on AWS EC2 instances.
 
 # Configure your AWS CLI
