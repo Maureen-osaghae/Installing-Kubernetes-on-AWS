@@ -89,6 +89,13 @@ We’ll want to connect to both. You can either do it one at a time, or you can 
 
 # JOIN THE WORKER NODE TO THE CLUSTER
 
+This command should only be run from the worker instance.
+
+Be sure to grab this command from the kubeadm init output, since you will have different token and ca-cert-hash values from the example above.
+
     # join the node to the cluster (get this command from the 'kubeadm init' output)
-    sudo kubeadm join 192.168.1.9:6443 --token lllrj0.pystabmhlyt2svty --discovery-token-ca-cert-hash sha256:9d2fd15886eb176466640067f361ed2295de38188b057becf31d3bf5a4fb0b73
+    sudo kubeadm join 10.10.10.226:6443 --token 3ojvgs.wdj3m4jw8udiyt4r --discovery-token-ca-cert-hash sha256:c83d52076cb801f47b64643c49500d0c1ee86d2d4a25cbd4a34e4d37126ea1e9 
+
+<img width="467" height="274" alt="image" src="https://github.com/user-attachments/assets/d9acb678-6504-477f-a323-23853c9e94c3" />
+
 
